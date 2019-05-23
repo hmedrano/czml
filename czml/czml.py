@@ -1366,10 +1366,26 @@ class CZMLPacket(_CZMLBaseObject):
 
     _name = None
 
-    _properties = ('id', 'name', 'description', 'version', 'availability', 'billboard', 'clock', 'position', 'label', 'point', 'positions', 'polyline', 'polygon', 'path', 'orientation', 'ellipse', 'ellipsoid', 'cone', 'pyramid', 'model')
+    # Custom properties
+    _custom_properties = None
+
+    _properties = ('id', 'name', 'description', 'version', 'availability', 'billboard', 'clock', 'position', 'label', 'point', 'positions', 'polyline', 'polygon', 'path', 'orientation', 'ellipse', 'ellipsoid', 'cone', 'pyramid', 'model', 'custom_properties')
 
     # TODO: Figure out how to set __doc__ from here.
     # position = class_property(Position, 'position')
+
+    @property
+    def custom_properties(self):
+        if self._custom_properties is not None:
+            return self._custom_properties
+
+
+    @custom_properties.setter
+    def custom_properties(self, cproperties):
+        if isinstance(cproperties, dict):
+            self._custom_properties = cproperties
+        else:
+            raise TypeError
 
     @property
     def name(self):
@@ -1656,6 +1672,8 @@ class CZMLPacket(_CZMLBaseObject):
         d = {}
         for property_name in self._properties:
             property_value = getattr(self, property_name)
+            if property_name == 'custom_properties':
+                property_name = 'properties'
             if property_value is not None:
                 d[property_name] = property_value
         return d
